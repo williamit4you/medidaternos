@@ -15,8 +15,8 @@ FROM nginx:alpine AS runner
 # Copy static assets from builder stage
 COPY --from=builder /app/out /usr/share/nginx/html
 
-# Copy custom nginx config if needed (optional, using default for now which works for static)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8017
 

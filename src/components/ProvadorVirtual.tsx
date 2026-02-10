@@ -70,7 +70,7 @@ function SilhouetteDisplay({ step, data }: { step: number, data: UserData }) {
                         <h1 className="text-4xl font-serif text-white/90 tracking-wide mb-2 drop-shadow-lg">4K TERNOS</h1>
                         <div className="h-[1px] w-24 bg-amber-600 mx-auto mb-2"></div>
                         <p className="text-neutral-400 text-[10px] tracking-[0.4em] uppercase font-medium">
-                            Experience Bespoke
+                            Elegância e Qualidade
                         </p>
                     </motion.div>
                 )}

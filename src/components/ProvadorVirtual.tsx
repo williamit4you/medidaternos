@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ArrowRight, Edit2, Check } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Edit2, Check, Instagram, MessageCircle, ShoppingBag } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserData, calculateSuitSize } from "@/lib/calculator";
-import dynamic from "next/dynamic"; // For future 3D if needed, or keeping structure
+import Link from "next/link";
 
 // Placeholder for the visual component (replacing 3D mannequin)
-function SilhouetteDisplay({ step, data }: { step: number, data: UserData }) {
+function SilhouetteDisplay({ step }: { step: number }) {
     return (
         <div className="relative w-full h-full flex items-center justify-center bg-[#1a1a1a] overflow-hidden">
             {/* Background Texture/Gradient */}
@@ -72,6 +72,11 @@ function SilhouetteDisplay({ step, data }: { step: number, data: UserData }) {
                         <p className="text-neutral-400 text-[10px] tracking-[0.4em] uppercase font-medium">
                             Elegância e Qualidade
                         </p>
+                        <div className="mt-7 flex justify-center gap-2">
+                            <Link href="/catalogo" aria-label="Ver catálogo" className="inline-flex min-h-10 items-center gap-2 rounded-full border border-amber-600/50 px-4 text-[10px] font-bold uppercase tracking-[.12em] text-amber-400 hover:bg-amber-600 hover:text-white"><ShoppingBag size={14} /> Catálogo</Link>
+                            <a href="https://www.instagram.com/4kternos/" target="_blank" rel="noreferrer" aria-label="Instagram da 4K Ternos" className="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white/70 hover:border-amber-500 hover:text-amber-400"><Instagram size={16} /></a>
+                            <a href="https://wa.me/5517997614534" target="_blank" rel="noreferrer" aria-label="WhatsApp da 4K Ternos" className="grid h-10 w-10 place-items-center rounded-full border border-emerald-500/40 text-emerald-400 hover:bg-emerald-600 hover:text-white"><MessageCircle size={16} /></a>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -89,21 +94,26 @@ export default function ProvadorVirtual() {
         cinturaAdj: 0,
         quadrilAdj: 0,
     });
+    const [fieldValidity, setFieldValidity] = useState({ altura: true, peso: true, idade: true });
 
     const updateForm = (key: keyof UserData, value: number) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
     const tamanho = calculateSuitSize(formData);
+    const basicDataValid = Object.values(fieldValidity).every(Boolean);
 
-    const handleNext = () => setStep((p) => Math.min(3, p + 1));
+    const handleNext = () => {
+        if (step === 1 && !basicDataValid) return;
+        setStep((p) => Math.min(3, p + 1));
+    };
     const handleBack = () => setStep((p) => Math.max(1, p - 1));
 
     return (
         <div className="min-h-screen bg-neutral-900 text-neutral-100 font-sans selection:bg-amber-900 selection:text-white overflow-hidden flex flex-col md:flex-row">
             {/* Left Panel: Visuals (Hidden on Mobile) */}
             <div className="hidden md:block relative w-full md:w-1/2 h-screen bg-[#e5e5e5] overflow-hidden shadow-2xl z-0 border-r border-neutral-200">
-                <SilhouetteDisplay step={step} data={formData} />
+                <SilhouetteDisplay step={step} />
             </div>
 
             {/* Right Panel: UI */}
@@ -113,6 +123,11 @@ export default function ProvadorVirtual() {
                 <div className="md:hidden pt-8 px-8 text-center">
                     <h1 className="text-2xl font-serif text-neutral-900 tracking-wide opacity-90">4K Ternos</h1>
                     <p className="text-neutral-500 text-[10px] tracking-[0.3em] uppercase mb-4">Provador Virtual</p>
+                    <div className="mb-4 flex justify-center gap-2">
+                        <Link href="/catalogo" className="inline-flex min-h-11 items-center gap-2 rounded-full bg-neutral-900 px-4 text-[10px] font-bold uppercase tracking-wider text-white"><ShoppingBag size={14} /> Catálogo</Link>
+                        <a href="https://www.instagram.com/4kternos/" target="_blank" rel="noreferrer" aria-label="Abrir Instagram" className="grid h-11 w-11 place-items-center rounded-full border border-neutral-200 text-neutral-700"><Instagram size={17} /></a>
+                        <a href="https://wa.me/5517997614534" target="_blank" rel="noreferrer" aria-label="Abrir WhatsApp" className="grid h-11 w-11 place-items-center rounded-full bg-emerald-600 text-white"><MessageCircle size={17} /></a>
+                    </div>
                     <div className="h-[1px] w-full bg-neutral-100"></div>
                 </div>
 
@@ -148,9 +163,9 @@ export default function ProvadorVirtual() {
                                 <p className="text-neutral-500 text-sm leading-relaxed mb-6">
                                     Para garantir o caimento perfeito, precisamos de algumas informações básicas.
                                 </p>
-                                <InputGroup label="Altura" suffix="cm" value={formData.altura} onChange={(v) => updateForm('altura', v)} min={100} max={250} />
-                                <InputGroup label="Peso" suffix="kg" value={formData.peso} onChange={(v) => updateForm('peso', v)} min={40} max={200} />
-                                <InputGroup label="Idade" suffix="anos" value={formData.idade} onChange={(v) => updateForm('idade', v)} min={10} max={100} />
+                                <InputGroup label="Altura" suffix="cm" value={formData.altura} onChange={(v) => updateForm('altura', v)} onValidityChange={(valid) => setFieldValidity((current) => ({ ...current, altura: valid }))} min={100} max={250} />
+                                <InputGroup label="Peso" suffix="kg" value={formData.peso} onChange={(v) => updateForm('peso', v)} onValidityChange={(valid) => setFieldValidity((current) => ({ ...current, peso: valid }))} min={40} max={200} />
+                                <InputGroup label="Idade" suffix="anos" value={formData.idade} onChange={(v) => updateForm('idade', v)} onValidityChange={(valid) => setFieldValidity((current) => ({ ...current, idade: valid }))} min={10} max={100} />
                             </motion.div>
                         )}
                         {step === 2 && (
@@ -212,7 +227,8 @@ export default function ProvadorVirtual() {
                     {step < 3 ? (
                         <button
                             onClick={handleNext}
-                            className="flex-1 bg-neutral-900 hover:bg-black text-white px-6 py-4 rounded-xl font-medium tracking-wide flex items-center justify-center gap-3 shadow-lg shadow-neutral-200 transition-all active:scale-[0.98]"
+                            disabled={step === 1 && !basicDataValid}
+                            className="flex-1 bg-neutral-900 hover:bg-black text-white px-6 py-4 rounded-xl font-medium tracking-wide flex items-center justify-center gap-3 shadow-lg shadow-neutral-200 transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:shadow-none"
                         >
                             CONTINUAR <ArrowRight size={18} />
                         </button>
@@ -235,7 +251,9 @@ export default function ProvadorVirtual() {
 }
 
 // Subcomponents
-function InputGroup({ label, suffix, value, onChange, min, max }: { label: string, suffix: string, value: number, onChange: (v: number) => void, min: number, max: number }) {
+function InputGroup({ label, suffix, value, onChange, onValidityChange, min, max }: { label: string, suffix: string, value: number, onChange: (v: number) => void, onValidityChange: (valid: boolean) => void, min: number, max: number }) {
+    const [rawValue, setRawValue] = useState(String(value));
+    const valid = rawValue !== "" && Number(rawValue) >= min && Number(rawValue) <= max;
     return (
         <div className="py-2">
             <label className="flex justify-between text-xs font-bold text-neutral-400 uppercase tracking-wide mb-1">
@@ -244,13 +262,23 @@ function InputGroup({ label, suffix, value, onChange, min, max }: { label: strin
             <div className="relative group">
                 <input
                     type="number"
-                    value={value}
+                    value={rawValue}
                     min={min} max={max}
-                    onChange={(e) => onChange(Number(e.target.value))}
-                    className="w-full bg-neutral-50 border-b-2 border-neutral-200 focus:border-amber-500 py-3 px-2 text-2xl font-serif text-neutral-800 focus:outline-none transition-colors placeholder-transparent"
+                    inputMode="numeric"
+                    aria-invalid={!valid}
+                    onChange={(e) => {
+                        const next = e.target.value;
+                        setRawValue(next);
+                        const number = Number(next);
+                        const nextValid = next !== "" && Number.isFinite(number) && number >= min && number <= max;
+                        onValidityChange(nextValid);
+                        if (next !== "" && Number.isFinite(number)) onChange(number);
+                    }}
+                    className={`w-full bg-neutral-50 border-b-2 py-3 px-2 text-2xl font-serif text-neutral-800 focus:outline-none transition-colors placeholder-transparent ${valid ? "border-neutral-200 focus:border-amber-500" : "border-red-300 focus:border-red-500"}`}
                 />
                 <span className="absolute right-0 top-1/2 -translate-y-1/2 text-neutral-400 font-serif italic text-lg pointer-events-none pr-2">{suffix}</span>
             </div>
+            {!valid && <p className="mt-1.5 text-[11px] text-red-600">Informe um valor entre {min} e {max}.</p>}
         </div>
     )
 }

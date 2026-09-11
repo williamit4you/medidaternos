@@ -13,8 +13,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "4K Ternos - Provador Virtual",
-  description: "Encontre o tamanho ideal do seu terno com nosso provador virtual.",
+  title: {
+    default: "4K Ternos | Elegância que veste você",
+    template: "%s | 4K Ternos",
+  },
+  description: "Catálogo de ternos e provador virtual da 4K Ternos.",
 };
 
 export default function RootLayout({

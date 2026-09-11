@@ -4,3 +4,4 @@ out
 .git
 .gitignore
 README.md
+.env*

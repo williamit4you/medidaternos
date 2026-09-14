@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import type { CatalogProduct } from "@/lib/catalog";
 
 type Category = { id: string; name: string; slug: string; productCount: number };
-const SUIT_SIZES = ["36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56"];
+const SUIT_SIZES = ["42", "44", "46", "48", "50", "52", "54", "56", "58", "60", "62", "64"];
 const emptyForm = { id: "", title: "", description: "", categoryId: "", price: "", installments: "5", sizes: [] as string[], active: true };
 
 export default function AdminDashboard({ email }: { email: string }) {

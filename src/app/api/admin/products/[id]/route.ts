@@ -20,8 +20,8 @@ export async function PUT(request: Request, context: Context) {
   const parsed = productSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Revise os dados do produto." }, { status: 400 });
   const { id } = await context.params;
-  const result = await query(`UPDATE products SET category_id=$1, title=$2, description=$3, price_cents=$4, installments=$5, active=$6, updated_at=NOW() WHERE id=$7 RETURNING id`,
-    [parsed.data.categoryId, parsed.data.title, parsed.data.description, parsed.data.priceCents, parsed.data.installments, parsed.data.active, id]);
+  const result = await query(`UPDATE products SET category_id=$1, title=$2, description=$3, price_cents=$4, installments=$5, sizes=$6, active=$7, updated_at=NOW() WHERE id=$8 RETURNING id`,
+    [parsed.data.categoryId, parsed.data.title, parsed.data.description, parsed.data.priceCents, parsed.data.installments, parsed.data.sizes, parsed.data.active, id]);
   return result.rowCount ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "Produto não encontrado." }, { status: 404 });
 }
 

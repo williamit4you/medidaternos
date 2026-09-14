@@ -31,6 +31,7 @@ export default function ProductCard({ product, dense = false }: { product: Catal
         <div className={dense ? "p-3" : "p-4 sm:p-5"}>
           <h2 className={`${dense ? "text-sm" : "text-lg"} line-clamp-2 font-serif font-semibold leading-tight text-[#20211d]`}>{product.title}</h2>
           {!dense && <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-[#747064]">{product.description}</p>}
+          <p className="mt-3 text-[11px] font-semibold uppercase tracking-wide text-[#8b6731]">Tamanhos: {product.sizes.join(" · ")}</p>
           <div className={`${dense ? "mt-3" : "mt-5"} border-t border-[#eee9e1] pt-3`}>
             <strong className={`${dense ? "text-sm" : "text-xl"} block text-[#1b1c18]`}>{money.format(product.priceCents / 100)}</strong>
             <span className="text-[11px] text-[#777367]">ou {product.installments}x de {money.format(installment)} sem juros</span>

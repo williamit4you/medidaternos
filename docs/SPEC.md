@@ -11,6 +11,7 @@ Adicionar um catálogo comercial mobile-first ao provador existente, preservando
 - [x] Adicionar na raiz acessos rápidos ao catálogo, Instagram e WhatsApp
 - [x] Criar catálogo em `/catalogo`
 - [x] Exibir carrossel, título, descrição resumida, preço e parcelamento
+- [x] Cadastrar e exibir tamanhos disponíveis por produto
 - [x] Abrir detalhes completos em `/catalogo/[slug]`
 - [x] Gerar mensagem do item e direcionar a compra para o WhatsApp `+55 17 99761-4534`
 - [x] Exibir todas as categorias inicialmente e permitir filtrar uma categoria

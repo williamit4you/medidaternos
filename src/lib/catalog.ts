@@ -8,6 +8,7 @@ export type CatalogProduct = {
   description: string;
   priceCents: number;
   installments: number;
+  sizes: string[];
   active: boolean;
   category: { id: string; name: string; slug: string };
   images: CatalogImage[];
@@ -15,7 +16,7 @@ export type CatalogProduct = {
 
 type ProductRow = {
   id: string; title: string; slug: string; description: string; price_cents: number;
-  installments: number; active: boolean; category_id: string; category_name: string;
+  installments: number; sizes: string[]; active: boolean; category_id: string; category_name: string;
   category_slug: string; images: unknown;
 };
 
@@ -28,6 +29,7 @@ function mapProduct(row: ProductRow): CatalogProduct {
     description: row.description,
     priceCents: row.price_cents,
     installments: row.installments,
+    sizes: row.sizes || [],
     active: row.active,
     category: { id: row.category_id, name: row.category_name, slug: row.category_slug },
     images: raw.map((item) => {
@@ -38,7 +40,7 @@ function mapProduct(row: ProductRow): CatalogProduct {
 }
 
 const productSelect = `
-  SELECT p.id, p.title, p.slug, p.description, p.price_cents, p.installments, p.active,
+  SELECT p.id, p.title, p.slug, p.description, p.price_cents, p.installments, p.sizes, p.active,
     c.id AS category_id, c.name AS category_name, c.slug AS category_slug,
     COALESCE(json_agg(json_build_object('id', i.id, 'altText', i.alt_text) ORDER BY i.sort_order)
       FILTER (WHERE i.id IS NOT NULL), '[]') AS images

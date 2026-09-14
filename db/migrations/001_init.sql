@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT NOT NULL,
   price_cents INTEGER NOT NULL CHECK (price_cents >= 0),
   installments INTEGER NOT NULL DEFAULT 1 CHECK (installments BETWEEN 1 AND 24),
+  sizes TEXT[] NOT NULL DEFAULT '{}',
   active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

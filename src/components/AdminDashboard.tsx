@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import type { CatalogProduct } from "@/lib/catalog";
 
 type Category = { id: string; name: string; slug: string; productCount: number };
-const emptyForm = { id: "", title: "", description: "", categoryId: "", price: "", installments: "5", active: true };
+const SUIT_SIZES = ["36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56"];
+const emptyForm = { id: "", title: "", description: "", categoryId: "", price: "", installments: "5", sizes: [] as string[], active: true };
 
 export default function AdminDashboard({ email }: { email: string }) {
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -36,11 +37,11 @@ export default function AdminDashboard({ email }: { email: string }) {
   }, []);
 
   function startCreate() { setForm({ ...emptyForm, categoryId: categories[0]?.id || "" }); setFiles([]); setOpen(true); }
-  function startEdit(product: CatalogProduct) { setForm({ id: product.id, title: product.title, description: product.description, categoryId: product.category.id, price: (product.priceCents / 100).toFixed(2).replace(".", ","), installments: String(product.installments), active: product.active }); setFiles([]); setOpen(true); }
+  function startEdit(product: CatalogProduct) { setForm({ id: product.id, title: product.title, description: product.description, categoryId: product.category.id, price: (product.priceCents / 100).toFixed(2).replace(".", ","), installments: String(product.installments), sizes: product.sizes, active: product.active }); setFiles([]); setOpen(true); }
 
   async function save(event: React.FormEvent) {
     event.preventDefault(); setBusy(true); setNotice("");
-    const payload = { title: form.title, description: form.description, categoryId: form.categoryId, priceCents: Math.round(Number(form.price.replace(",", ".")) * 100), installments: Number(form.installments), active: form.active };
+    const payload = { title: form.title, description: form.description, categoryId: form.categoryId, priceCents: Math.round(Number(form.price.replace(",", ".")) * 100), installments: Number(form.installments), sizes: form.sizes, active: form.active };
     const response = await fetch(form.id ? `/api/admin/products/${form.id}` : "/api/admin/products", { method: form.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) { setNotice(body.error || "Não foi possível salvar."); setBusy(false); return; }
@@ -67,6 +68,7 @@ export default function AdminDashboard({ email }: { email: string }) {
       <label className="block"><span className="mb-1.5 block text-xs font-bold">Descrição completa</span><textarea required minLength={10} rows={5} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full rounded-xl border border-[#ddd5c9] bg-white p-4 outline-none focus:border-[#a87938]" /></label>
       <div className="grid grid-cols-2 gap-3"><label><span className="mb-1.5 block text-xs font-bold">Categoria</span><select required value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className="h-12 w-full rounded-xl border border-[#ddd5c9] bg-white px-3">{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label><label><span className="mb-1.5 block text-xs font-bold">Parcelas</span><input type="number" min="1" max="24" required value={form.installments} onChange={(e) => setForm({ ...form, installments: e.target.value })} className="h-12 w-full rounded-xl border border-[#ddd5c9] bg-white px-4" /></label></div>
       <label className="block"><span className="mb-1.5 block text-xs font-bold">Preço total (R$)</span><input inputMode="decimal" required placeholder="699,00" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="h-12 w-full rounded-xl border border-[#ddd5c9] bg-white px-4" /></label>
+      <fieldset><legend className="mb-2 text-xs font-bold">Tamanhos disponíveis</legend><div className="flex flex-wrap gap-2">{SUIT_SIZES.map((size) => { const checked = form.sizes.includes(size); return <label key={size} className={`grid h-10 min-w-10 cursor-pointer place-items-center rounded-lg border px-2 text-sm font-bold transition ${checked ? "border-[#a87938] bg-[#a87938] text-white" : "border-[#ddd5c9] bg-white text-[#5c574e]"}`}><input type="checkbox" checked={checked} onChange={() => setForm((current) => ({ ...current, sizes: checked ? current.sizes.filter((item) => item !== size) : [...current.sizes, size] }))} className="sr-only" />{size}</label>; })}</div><p className="mt-2 text-[11px] text-[#827c72]">Selecione todos os tamanhos disponíveis deste produto.</p></fieldset>
       {editing?.images.length ? <div><span className="mb-2 block text-xs font-bold">Imagens atuais</span><div className="flex gap-2 overflow-x-auto">{editing.images.map((image) => <div key={image.id} className="relative h-28 w-20 shrink-0 overflow-hidden rounded-xl"><img src={image.url} alt="" className="h-full w-full object-cover" /><button type="button" onClick={() => removeImage(image.id)} className="absolute right-1 top-1 grid h-7 w-7 place-items-center rounded-full bg-red-600 text-white"><X size={14} /></button></div>)}</div></div> : null}
       <label className="block rounded-2xl border border-dashed border-[#cfc5b7] bg-white p-5 text-center"><ImagePlus className="mx-auto text-[#9a815b]" /><span className="mt-2 block text-sm font-bold">Adicionar imagens</span><span className="block text-xs text-[#827c72]">JPG, PNG, WebP ou AVIF · até 8 MB cada</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} className="mt-3 block w-full text-xs" />{files.length > 0 && <span className="mt-2 block text-xs text-[#8d672e]">{files.length} arquivo(s) selecionado(s)</span>}</label>
       <label className="flex min-h-11 items-center gap-3"><input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} className="h-5 w-5 accent-[#a87938]" /><span className="text-sm">Produto visível no catálogo</span></label>

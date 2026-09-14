@@ -11,6 +11,7 @@ export const productSchema = z.object({
   categoryId: z.uuid(),
   priceCents: z.number().int().min(0).max(100_000_000),
   installments: z.number().int().min(1).max(24),
+  sizes: z.array(z.string().trim().min(1).max(12)).min(1, "Selecione ao menos um tamanho.").max(30).transform((sizes) => [...new Set(sizes)]),
   active: z.boolean().default(true),
 });
 
